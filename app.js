@@ -11,10 +11,17 @@ GAME RULES:
 
 var scores, roundScore, activePlayer, gamePlaying, lastDice;
 
+var startsound = new Audio('audio/start.mp3');
+var rollaudio = new Audio('audio/roll.wav');
+var destaudio = new Audio('audio/destroy.wav');
+var bombaudio = new Audio('audio/bomb.wav');
+var endaudio = new Audio('audio/end.mp3');
+
 init();
 
 document.querySelector('.btn-roll').addEventListener('click', function () {
     if (gamePlaying) {
+
         // 1. Random number
         var dice = Math.floor(Math.random() * 6) + 1;
 
@@ -28,15 +35,19 @@ document.querySelector('.btn-roll').addEventListener('click', function () {
             // Player loses score
             scores[activePlayer] = 0;
             document.getElementById(`score-${activePlayer}`).textContent = scores[activePlayer];
+            destaudio.play();
             nextPlayer();
 
         } else if (dice !== 1) {
             // Add score
+            rollaudio.play();
             roundScore += dice;
             document.querySelector(`#current-${activePlayer}`).textContent = roundScore;
         } else {
             // Next Player
+            bombaudio.play();
             nextPlayer();
+
         }
         lastDice = dice;
     }
@@ -58,11 +69,13 @@ document.querySelector('.btn-hold').addEventListener('click', function () {
 
         // Check if the player won the game
         if (scores[activePlayer] >= winningScore) {
+            endaudio.play();
             document.getElementById(`name-${activePlayer}`).textContent = "WINNER!";
             document.querySelector('.dice').style.display = 'none';
             document.querySelector(`.player-${activePlayer}-panel`).classList.add('winner');
             document.querySelector(`.player-${activePlayer}-panel`).classList.remove('active');
             gamePlaying = false;
+
         } else {
             // Next player turn
             nextPlayer();
@@ -91,6 +104,9 @@ function init() {
     roundScore = 0;
     activePlayer = 0;
     gamePlaying = true;
+
+    // play start sound
+    startsound.play();
 
     // Hide the initial dice image
     document.querySelector('.dice').style.display = 'none';
